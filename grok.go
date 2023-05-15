@@ -39,6 +39,7 @@ import (
 	"fmt"
 	"os"
 	"regexp"
+	"sync"
 
 	"github.com/wasilibs/go-re2"
 )
@@ -55,6 +56,8 @@ var (
 	// ErrNotExist arises when pattern with given name doesn't exists
 	ErrNotExist = errors.New("pattern doesn't exist")
 )
+
+var lock sync.RWMutex
 
 // Host is a patterns collection. Feel free to
 // delete the Host after all patterns (that you need)
@@ -80,9 +83,12 @@ func (h Host) Add(name, expr string) error {
 	if expr == "" {
 		return ErrEmptyExpression
 	}
+	lock.RLock()
 	if _, ok := h.Patterns[name]; ok {
+		lock.RUnlock()
 		return ErrAlreadyExist
 	}
+	lock.RUnlock()
 	if h.UseRe2 {
 		if _, err := h.compileExternalRe2(expr); err != nil {
 			return err
@@ -92,12 +98,16 @@ func (h Host) Add(name, expr string) error {
 			return err
 		}
 	}
+	lock.Lock()
 	h.Patterns[name] = expr
+	lock.Unlock()
 	return nil
 }
 
 func (h Host) compile(name string) (Pattern, error) {
+	lock.RLock()
 	expr, ok := h.Patterns[name]
+	lock.RUnlock()
 	if !ok {
 		return nil, ErrNotExist
 	}
@@ -117,9 +127,12 @@ func (h Host) compileExternal(expr string) (*PatternLegacy, error) {
 	// chek: does subpatterns exist into this Host?
 	for _, s := range subs {
 		name, sem := split(s)
+		lock.RLock()
 		if _, ok := h.Patterns[name]; !ok {
+			lock.RUnlock()
 			return nil, fmt.Errorf("the '%s' pattern doesn't exist", name)
 		}
+		lock.RUnlock()
 		ts[sem] = struct{}{}
 	}
 	// if there are not subpatterns
@@ -184,9 +197,12 @@ func (h Host) compileExternalRe2(expr string) (*PatternRe2, error) {
 	// chek: does subpatterns exist into this Host?
 	for _, s := range subs {
 		name, sem := split(s)
+		lock.RLock()
 		if _, ok := h.Patterns[name]; !ok {
+			lock.RUnlock()
 			return nil, fmt.Errorf("the '%s' pattern doesn't exist", name)
 		}
+		lock.RUnlock()
 		ts[sem] = struct{}{}
 	}
 	// if there are not subpatterns
