@@ -9,4 +9,6 @@ type Pattern interface {
 	//ripped from regexp.Regexp
 	Match([]byte) bool
 	FindStringIndex(string) (loc []int)
+	FindAllStringSubmatchIndex(s string, n int) [][]int
+	FindAllStringSubmatch(s string, n int) [][]string
 }
