@@ -15,4 +15,5 @@ type Pattern interface {
 	FindAllStringSubmatch(s string, n int) [][]string
 	FindStringSubmatch(s string) []string
 	SubexpIndex(name string) int
+	SubexpNames() []string
 }
