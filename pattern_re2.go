@@ -11,6 +11,10 @@ type PatternRe2 struct {
 	s map[string]int
 }
 
+func (p *PatternRe2) GetIndexes() map[string]int {
+	return p.s
+}
+
 // Parse returns map (name->match) on input. The map can be empty.
 func (p *PatternRe2) Parse(input string) map[string]string {
 	ss := p.FindStringSubmatch(input)
