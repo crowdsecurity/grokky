@@ -9,6 +9,10 @@ type PatternLegacy struct {
 	s map[string]int
 }
 
+func (p *PatternLegacy) GetIndexes() map[string]int {
+	return p.s
+}
+
 // Parse returns map (name->match) on input. The map can be empty.
 func (p *PatternLegacy) Parse(input string) map[string]string {
 	ss := p.FindStringSubmatch(input)

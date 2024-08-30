@@ -96,6 +96,42 @@ func (h Host) Add(name, expr string) error {
 	return nil
 }
 
+func (h Host) Edit(name string, value string) error {
+	if name == "" {
+		return ErrEmptyName
+	}
+	if value == "" {
+		return ErrEmptyExpression
+	}
+	if _, ok := h.Patterns[name]; !ok {
+		return ErrNotExist
+	}
+	if h.UseRe2 {
+		if _, err := h.compileExternalRe2(value); err != nil {
+			return err
+		}
+	} else {
+		if _, err := h.compileExternal(value); err != nil {
+			return err
+		}
+	}
+	h.Patterns[name] = value
+
+	//FIXME: no need to compile all patterns
+	for _, expr := range h.Patterns {
+		if h.UseRe2 {
+			if _, err := h.compileExternalRe2(expr); err != nil {
+				return err
+			}
+		} else {
+			if _, err := h.compileExternal(expr); err != nil {
+				return err
+			}
+		}
+	}
+	return nil
+}
+
 func (h Host) compile(name string) (Pattern, error) {
 	expr, ok := h.Patterns[name]
 	if !ok {
