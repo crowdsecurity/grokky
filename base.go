@@ -44,7 +44,7 @@ func NewBase() Host {
 	//
 	h.Must("USERNAME", `[a-zA-Z0-9._-]+`)
 	h.Must("USER", `%{USERNAME}`)
-	h.Must("EMAILLOCALPART", `[a-zA-Z][a-zA-Z0-9_.+-=:]+`)
+	h.Must("EMAILLOCALPART", `[a-zA-Z0-9_.+-=:]+`)
 	h.Must("HOSTNAME", `\b[0-9A-Za-z][0-9A-Za-z-]{0,62}(?:\.[0-9A-Za-z][0-9A-Za-z-]{0,62})*(\.?|\b)`)
 	h.Must("EMAILADDRESS", `%{EMAILLOCALPART}@%{HOSTNAME}`)
 	h.Must("HTTPDUSER", `%{EMAILADDRESS}|%{USER}`)
