@@ -128,7 +128,10 @@ func (h Host) compileExternal(expr string) (*PatternLegacy, error) {
 		if err != nil {
 			return nil, err
 		}
-		return &PatternLegacy{Regexp: r}, nil
+		return &PatternLegacy{
+			Regexp:           r,
+			requiredLiterals: extractRequiredLiterals(expr),
+		}, nil
 	}
 	// split
 	spl := patternRegexp.Split(expr, -1)
@@ -172,6 +175,7 @@ func (h Host) compileExternal(expr string) (*PatternLegacy, error) {
 	}
 	p := &PatternLegacy{Regexp: r}
 	p.s = msi
+	p.requiredLiterals = extractRequiredLiterals(res)
 	return p, nil
 }
 
@@ -195,7 +199,10 @@ func (h Host) compileExternalRe2(expr string) (*PatternRe2, error) {
 		if err != nil {
 			return nil, err
 		}
-		return &PatternRe2{Regexp: r}, nil
+		return &PatternRe2{
+			Regexp:           r,
+			requiredLiterals: extractRequiredLiterals(expr),
+		}, nil
 	}
 	// split
 	spl := patternRegexp.Split(expr, -1)
@@ -239,6 +246,7 @@ func (h Host) compileExternalRe2(expr string) (*PatternRe2, error) {
 	}
 	p := &PatternRe2{Regexp: r}
 	p.s = msi
+	p.requiredLiterals = extractRequiredLiterals(res)
 	return p, nil
 }
 
